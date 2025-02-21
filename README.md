@@ -8,11 +8,11 @@ It's extended with more features like pasting images from clipboard, handling na
 
 ## Requirements
 
-Requires Neovim
-Requires python >= `3x`
-Requires [python-keepassxc-browser](https://github.com/hrehfeld/python-keepassxc-browser) (only if keepassxc integration is used)
-Requires [python-dokuwiki](https://github.com/fmenabe/python-dokuwiki)
-Requires [python-pillow](https://github.com/python-pillow/Pillow) (for image pasting)
+ - Neovim
+ - python >= `3x`
+ - [python-keepassxc-browser](https://github.com/hrehfeld/python-keepassxc-browser) (only if keepassxc integration is used)
+ - [python-dokuwiki](https://github.com/fmenabe/python-dokuwiki)
+ - [python-pillow](https://github.com/python-pillow/Pillow) (for image pasting)
 
 ## Installation
 
