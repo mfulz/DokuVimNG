@@ -249,10 +249,10 @@ class DokuVimNG:
         if self.diffmode:
             self.diff_close()
 
-        self.focus(2)
-
         if wp.find(":") == -1:
             wp = self.cur_ns + wp
+
+        self.focus(2)
 
         if (
             wp in self.buffers
@@ -555,7 +555,7 @@ class DokuVimNG:
         if query and query[-1] != ":":
             query += ":"
 
-        self.index(query)
+        self.index(query, True)
 
     @pynvim.function("DWNindex", sync=True)
     def dwn_index(self, args):
