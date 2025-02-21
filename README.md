@@ -2,7 +2,7 @@
 
 DokuVimNG is a Neovim plugin that allows you to edit [DokuWiki](https://dokuwiki.org) pages via it's xml-rpc interface. It also does syntax highlighting for DokuWiki syntax.
 
-The whole code is initially taken from [dokuvimki](https://github.com/kynan/dokuwiki) and updated to Neovim's lua configuration plus using the new style pynvim plugin stuff.
+The whole code is initially taken from [dokuvimki](https://github.com/kynan/dokuvimvki) and updated to Neovim's lua configuration plus using the new style pynvim plugin stuff.
 
 It's extended with more features like pasting images from clipboard, handling namespace switching and integrating KeePassXC credentials lookup via browser api.
 
@@ -169,4 +169,3 @@ for the match to be in the value and the second one checks for equality.
 Default : `~/.DokuVimNG.state`
 
 The state file to save the KeePassXC browser api login credentials
-
