@@ -1,0 +1,335 @@
+*DokuVimNG*   Plugin for editing DokuWiki pages via XML-RPC for Neovim 
+
+                    By Matthias Fulz <mfulz@olznet.de>
+
+                                                            *DokuVimNG-plugin*
+
+------------------------------------------------------------------------------
+OVERVIEW                                                  *DokuVimNG-overview*
+
+|DokuVimNG-installation|        Installation instructions
+
+|DokuVimNG-configuration|       How to configure DokuVimNG
+
+|DokuVimNG-commands|            Brief description of the available commands
+
+|DokuVimNG-buffer-mappings|     Description of the mappings available in the
+                              special buffers
+
+|DokuVimNG-bugs|                Bug reports are always welcome ;-)
+
+------------------------------------------------------------------------------
+UPDATES                                                    *DokuVimNG-updates*
+
+The official releases can be found at:
+
+    git: https://github.com/mfulz/DokuVimNG
+
+------------------------------------------------------------------------------
+INSTALLATION                                          *DokuVimNG-installation*
+
+LAZY.NVIM ~
+
+> lua
+  return {
+    "mfulz/DokuVimNG",
+      config = function()
+        require("DokuVimNG").setup{
+          urls = {
+            "https://my.dokuwiki.url",
+            "https://other.dokuwiki.url",
+          },
+          creds = {
+            { user = "user1", pass = "pass1" },
+            { user = "user2", pass = "pass2" },
+          },
+        }
+      end,
+  }
+<
+
+More complete setup ~
+
+> lua
+  return {
+    "mfulz/DokuVimNG",
+      config = function()
+        require("DokuVimNG").setup{
+          urls = {
+            "https://my.dokuwiki.url",
+          },
+          keepassxc = true,
+          keepassxc_match {
+            field = "name",
+            match = "dokuwiki",
+            rule = "contains",
+          },
+        }
+      end,
+  }
+<
+
+------------------------------------------------------------------------------
+CONFIGURATION                                        *DokuVimNG-configuration*
+
+DokuVimNG comes with the following defaults:
+
+> lua
+    {
+      index_winwidth = 40,
+      save_summary = "[DokuVimNG edit]",
+      image_sub_ns = "images",
+      keys = {
+          init = "<Leader>Wi",
+          edit = "<Leader>We",
+          cd = "<Leader>Wc",
+          search = "<Leader>Ws",
+          mediasearch = "<Leader>Wm",
+          paste_image = "<Leader>Wpi",
+          paste_image_link = "<Leader>Wpl",
+      },
+      urls = {},
+      creds = {},
+      keepassxc = false,
+      keepassxc_id = "DokuVimNG",
+      keepassxc_match {
+        field = "name",
+        match = "",
+        rule = "contains",
+      },
+      keepassxc_state_file = "~/.DokuVimNG.state",
+    }
+<
+
+CONFIGURATION ~
+
+INDEX_WINWIDTH
+
+Default : `40`
+
+Define the width of the index window
+
+SAVE_SUMMARY
+
+Default : `[DokuVimNG edit]`
+
+The default summary used for dokuwiki changes
+
+IMAGE_SUB_NS
+
+Default : `images`
+
+The namespace used as sub namespace when pasting images
+
+URLS
+
+Default : ``
+
+List of urls that should be handled by DokuVimNG. This must be set in the
+configuration
+
+CREDS
+
+Default : ``
+
+List of maps `{ user = "login_name", pass = "user_pass" }` to be used for
+dokuwiki logins.
+This must be set if keepassxc is set to `false`
+
+KEEPASSXC
+
+Default : `false`
+
+If set to `true` DokuVimNG will use the KeePassXC browser api to look for
+credentials. Will override CREDS
+
+KEEPASSXC_ID
+
+Default : `DokuVimNG`
+
+The identifier used for KeePassXC browser api
+
+KEEPASSXC_MATCH
+
+A simple match rule definition for keepass credentials
+
+KEEPASSXC_MATCH.FIELD
+
+Default : `"name"`
+
+The field to compare against the requested value from the KeePassXC reponse
+`"name"`, `"group"`, `"login"`, etc.
+
+KEEPASSXC_MATCH.MATCH
+
+Default : `""`
+
+The value that should be matched. If empty it will return all found
+credentials.
+
+KEEPASSXC_MATCH.RULE
+
+The rule to match with `"contains"` or `"equals"` where the first one looks
+for the match to be in the value and the second one checks for equality.
+
+KEEPASSXC_STATE_FILE
+
+Default : `~/.DokuVimNG.state`
+
+The state file to save the KeePassXC browser api login credentials
+
+------------------------------------------------------------------------------
+COMMANDS                                                  *DokuVimNG-commands*
+
+:DWNinit                                  Launches DokuVimNG with the options from above.
+
+:DWNedit <page>                           Opens the given wiki page in the edit buffer. If
+                                          the page does not exist on the remote wiki it will
+                                          be created once you issue :DWSave. You can use
+                                          <TAB> to autocomplete pages. If the page doesn't
+                                          contain any ':' the page will be created in the
+                                          current namespace the index is showing.
+
+:DWNcd <namespace>                        Change into a given namespace.
+
+:DWNsave <summary>                        Save the wiki page in the edit buffer to the
+                                          remote wiki. If no edit summary is given it
+                                          will be saved as minor edit. You can also use :w
+                                          but it will not allow to specify a edit summary.
+ 
+:DWNbacklinks <page>                      Loads a list of pages which link back to the given
+                                          wiki page into the edit buffer. If you are already
+                                          editing a page you can use the command without
+                                          supplying a wiki page and it will load a list of
+                                          backlinks to the page loaded in the edit buffer.
+                                          You can use <TAB> to autocomplete pages.
+
+:DWNrevisions <page> N                    Lists the available revisions of a wiki page. You
+                                          can use an offset (integer) to view earlier
+                                          revisions. The number of shown revisions depends
+                                          on the $conf['recent'] setting of the remote wiki.
+                                          You can use <TAB> to autocomplete pages.
+
+:DWNsearch <pattern>                      Searches for matching pages. You can use regular
+                                          expressions!
+
+:DWNmediasearch <pattern>                 Searches for matching media files. You can use
+                                          regular expressions.
+
+:DWNchanges <timeframe>                   Lists the recent changes of the remote wiki.
+                                          You can specify a timeframe:
+
+                                            Nd      show changes of the last N days
+                                            Nw      show changes of the last N weeks
+
+:DWNpasteImage <link> <after> <silent>    Upload image from clipboard and paste it to the
+                                          open page. If <link> is `True` it will paste a
+                                          wiki link like `{{image.png}}` to the content.
+                                          Else it will just paste the file path.
+                                          If <after> is `True` it will paste after the cursor.
+                                          If not it will paste before.
+                                          If <silent> is `True` it will not ask for a filename
+                                          instead just generates a name in the form
+                                          `image_timestamp.png`
+
+:DWNclose                                 Closes the current edit buffer (removing edit
+:DWNclose!                                locks on the remote wiki etc.) - if the buffer
+                                          contains changes which haven't been synced back
+                                          to the remote wiki this command will issue a
+                                          warning.  You can also use :close which is setup
+                                          as abbreviation.
+
+:DWNdiffclose                             Closes diff mode
+
+:DWNupload <file>                         Allows to upload a file in the current namespace.
+:DWNupload! <file>
+
+:DWNquit                                  Quits the current session and quits vim. This will
+:DWNquit!                                 fail if there are unsaved changes.
+
+:DWNhelp                                  Displays the DokuVimNG help.
+
+------------------------------------------------------------------------------
+EDIT-MAPPINGS                                        *DokuVimNG-edit-mappings*
+
+DokuVimNG mimics the functionality of DokuWikis edit toolbar to make it easier
+to insert/edit wiki syntax. These mappings work only in insert mode:
+
+    <C-D><C-B>  inserts bold syntax
+
+    <C-D><C-I>  inserts italic syntax
+
+    <C-D><C-U>  inserts underline syntax
+
+    <C-D><C-L>  inserts link syntax
+
+    <C-D><C-M>  inserts media syntax
+
+    <C-D><C-K>  inserts code block syntax
+
+    <C-D><C-F>  inserts file block syntax
+
+    <C-D><C-H>  inserts a headline
+
+    <C-I><C-P>  increases the current headline level by one
+
+    <C-I><C-D>  decreases the current headline level by one
+
+This mapping only works in normal mode:
+
+    <ENTER>     Opens the page under the cursor for editing. This only works
+                normal mode.
+
+
+------------------------------------------------------------------------------
+BUFFER-MAPPINGS                                    *DokuVimNG-buffer-mappings*
+
+DokuVimNG comes with some specials mappings you can use in the special buffers
+like the index or the recent changes view.
+
+
+INDEX
+
+    <ENTER>     Opens the page for editing, or lists the contents of the
+                namespace under the cursor.
+
+    b           Shows a list of the page linking back to the page under the
+                cursor.
+
+    r           Shows the revisions of page under the cursor.
+
+
+REVISIONS
+
+    <ENTER>     Opens the page revision for editing.
+
+    d           Opens the diff view for the page and the revision under the
+                cursor.
+
+
+CHANGES
+
+    <ENTER>     Opens the page revision under the cursor for editing.
+
+
+SEARCH
+
+    <ENTER>     Opens the page under the cursor for editing.
+
+
+BACKLINKS
+
+    <ENTER>     Opens the page under the cursor for editing.
+
+------------------------------------------------------------------------------
+BUGS                                                          *DokuVimNG-bugs*
+
+Please use the official bug tracker for feature requests of bug reports:
+>
+    https://github.com/mfulz/DokuVimNG/issues
+
+
+If the bug is reproducible, then it will be of great help if a short
+description of the events leading to the bug are also given ;-).
+
+vim:tw=78:et:ts=4:ft=help:norl:

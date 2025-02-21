@@ -1,0 +1,5 @@
+let &runtimepath.=','.escape(expand('<sfile>:p:h'), '\,')
+let mapleader = ","
+
+lua require("DokuVimNG").setup({})
+
